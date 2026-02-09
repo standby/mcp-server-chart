@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-MCP server (`@antv/mcp-server-chart`) that exposes 27+ chart generation tools via the Model Context Protocol. Built with TypeScript, it accepts chart specifications, validates them with Zod, and renders charts locally using `@antv/g2-ssr` (no external server needed by default). A remote rendering API is available as an optional fallback.
+MCP server (`@antv/mcp-server-chart`) that exposes 23 chart generation tools via the Model Context Protocol. Built with TypeScript, it accepts chart specifications, validates them with Zod, and renders charts locally using `@antv/g2-ssr` (no external server needed).
 
 ## Commands
 
@@ -40,14 +40,11 @@ All charts are re-exported from `src/charts/index.ts` using string-literal named
 
 ### Tool Dispatch (`src/utils/callTool.ts`)
 
-`CHART_TYPE_MAP` maps tool names → chart type keys. `callTool()` validates input with `z.object(schema).safeParse(args)`, then calls either `generateMap()` (for district/path/pin maps) or `generateChartUrl()` (for everything else). Errors are converted to typed `McpError` responses.
+`CHART_TYPE_MAP` maps tool names -> chart type keys. `callTool()` validates input with `z.object(schema).safeParse(args)`, then calls `generateChartUrl()` to render locally. Errors are converted to typed `McpError` responses.
 
 ### Chart Rendering (`src/utils/generate.ts`)
 
-Two rendering modes controlled by `RENDER_MODE` env var:
-
-- **Local (default)**: Translates MCP chart specs to G2 specs via `src/utils/spec-translator.ts`, then renders to PNG using `@antv/g2-ssr` in `src/utils/local-render.ts`. Images are saved to a temp directory and served by a local HTTP image server (`src/utils/image-server.ts`, default port 18900).
-- **Remote** (`RENDER_MODE=remote`): POSTs specs to an external AntV API. Map charts (district/path/pin) always use the remote API.
+Translates MCP chart specs to G2 specs via `src/utils/spec-translator.ts`, then renders to PNG using `@antv/g2-ssr` in `src/utils/local-render.ts`. Images are saved to a temp directory and served by a local HTTP image server (`src/utils/image-server.ts`, default port 18900).
 
 ### Spec Translation (`src/utils/spec-translator.ts`)
 
@@ -56,13 +53,13 @@ Translates the MCP server's custom chart schemas into `@antv/g2` declarative spe
 ### Transport Layer (`src/services/`)
 
 Three transport implementations, all using the same `createServer()` from `src/server.ts`:
-- **stdio** — direct Node.js stdin/stdout
-- **SSE** — Express-based Server-Sent Events (default port 1122, endpoint `/sse`)
-- **Streamable HTTP** — stateless Express endpoint (default port 1122, endpoint `/mcp`)
+- **stdio** -- direct Node.js stdin/stdout
+- **SSE** -- Express-based Server-Sent Events (default port 1122, endpoint `/sse`)
+- **Streamable HTTP** -- stateless Express endpoint (default port 1122, endpoint `/mcp`)
 
 ### Server Setup (`src/server.ts`)
 
-`createServer()` instantiates an MCP `Server`, registers `ListToolsRequest` and `CallToolRequest` handlers. On startup, `initLocalRendering()` starts the image server if local mode is enabled. Tools can be disabled at runtime via the `DISABLED_TOOLS` environment variable.
+`createServer()` instantiates an MCP `Server`, registers `ListToolsRequest` and `CallToolRequest` handlers. On startup, `initLocalRendering()` starts the image server. Tools can be disabled at runtime via the `DISABLED_TOOLS` environment variable.
 
 ## Adding a New Chart
 
@@ -70,25 +67,22 @@ Three transport implementations, all using the same `createServer()` from `src/s
 2. Compose schema from base schemas in `base.ts` + custom Zod fields
 3. Name the tool `generate_my_chart` with a descriptive `description`
 4. Export from `src/charts/index.ts`
-5. Add the tool name → chart type mapping in `CHART_TYPE_MAP` in `src/utils/callTool.ts`
-6. Add a G2 spec translator in `src/utils/spec-translator.ts` for local rendering support
+5. Add the tool name -> chart type mapping in `CHART_TYPE_MAP` in `src/utils/callTool.ts`
+6. Add a G2 spec translator in `src/utils/spec-translator.ts`
 
 ## Environment Variables
 
 | Variable | Purpose | Default |
 |---|---|---|
-| `RENDER_MODE` | `local` or `remote` rendering | `local` |
 | `CHART_IMAGE_DIR` | Custom directory for rendered chart images | OS temp dir |
 | `IMAGE_SERVER_PORT` | Port for the local image server | `18900` |
-| `VIS_REQUEST_SERVER` | Remote chart rendering API URL (remote mode) | `https://antv-studio.alipay.com/api/gpt-vis` |
-| `SERVICE_ID` | Service ID for map chart rendering (remote) | — |
-| `DISABLED_TOOLS` | Comma-separated tool names to disable | — |
+| `DISABLED_TOOLS` | Comma-separated tool names to disable | -- |
 
 ## Testing
 
 Tests live in `__tests__/*.spec.ts`. Key test files:
-- `local-render.spec.ts` — tests spec translation and local PNG rendering
-- `server.spec.ts` — integration tests spawning server processes for all three transports
-- `api.spec.ts` — SDK export structure validation
+- `local-render.spec.ts` -- tests spec translation and local PNG rendering
+- `server.spec.ts` -- integration tests spawning server processes for all three transports
+- `api.spec.ts` -- SDK export structure validation
 
 Test timeout is 60 seconds. Integration tests use unique `IMAGE_SERVER_PORT` values to avoid port conflicts.

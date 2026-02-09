@@ -9,7 +9,7 @@ type Args = Record<string, any>;
 
 /**
  * Translate an MCP chart type + args into a G2 spec.
- * Returns null for chart types that cannot be rendered with G2 (maps, spreadsheets, graph diagrams).
+ * Returns null for unknown chart types.
  */
 export function translateToG2Spec(
   chartType: string,
@@ -19,23 +19,6 @@ export function translateToG2Spec(
   if (!translator) return null;
   return translator(args);
 }
-
-/** Chart types that require G6 or external rendering and cannot use G2 */
-export const UNSUPPORTED_LOCAL_TYPES = new Set([
-  "district-map",
-  "path-map",
-  "pin-map",
-  "spreadsheet",
-]);
-
-/** Chart types that are graph/diagram types - rendered as simple SVG locally */
-export const GRAPH_DIAGRAM_TYPES = new Set([
-  "network-graph",
-  "mind-map",
-  "organization-chart",
-  "flow-diagram",
-  "fishbone-diagram",
-]);
 
 function applyCommonStyle(spec: Args, args: Args): void {
   if (args.title) {

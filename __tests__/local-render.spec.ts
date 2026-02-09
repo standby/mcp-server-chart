@@ -34,8 +34,8 @@ describe("local rendering", () => {
     expect((spec as any).coordinate.type).toBe("theta");
   });
 
-  it("returns null for unsupported types", () => {
-    const spec = translateToG2Spec("district-map", {});
+  it("returns null for unknown types", () => {
+    const spec = translateToG2Spec("unknown-type", {});
     expect(spec).toBeNull();
   });
 

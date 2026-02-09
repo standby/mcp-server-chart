@@ -14,19 +14,16 @@ import {
   getChartImageDir,
   getDisabledTools,
   getImageServerPort,
-  isLocalMode,
 } from "./utils/env";
 import { startImageServer } from "./utils/image-server";
 import { setOutputDir } from "./utils/local-render";
 import { logger } from "./utils/logger";
 
 /**
- * Initialize local rendering if enabled.
+ * Initialize local rendering.
  * Starts the image server and waits for it to be ready.
  */
 async function initLocalRendering(): Promise<void> {
-  if (!isLocalMode()) return;
-
   const customDir = getChartImageDir();
   if (customDir) {
     setOutputDir(customDir);

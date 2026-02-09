@@ -1,23 +1,6 @@
 import process from "node:process";
 
 /**
- * Get the VIS_REQUEST_SERVER from environment variables.
- */
-export function getVisRequestServer() {
-  return (
-    process.env.VIS_REQUEST_SERVER ||
-    "https://antv-studio.alipay.com/api/gpt-vis"
-  );
-}
-
-/**
- * Get the `SERVICE_ID` from environment variables.
- */
-export function getServiceIdentifier() {
-  return process.env.SERVICE_ID;
-}
-
-/**
  * Get the list of disabled tools from environment variables.
  */
 export function getDisabledTools(): string[] {
@@ -26,15 +9,6 @@ export function getDisabledTools(): string[] {
     return [];
   }
   return disabledTools.split(",");
-}
-
-/**
- * Check if local rendering mode is enabled.
- * Defaults to true (local mode). Set RENDER_MODE=remote to use remote API.
- */
-export function isLocalMode(): boolean {
-  const mode = process.env.RENDER_MODE?.toLowerCase();
-  return mode !== "remote";
 }
 
 /**
