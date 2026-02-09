@@ -6,7 +6,9 @@ services:
     image: mcp-server-chart:stable
     container_name: mcp-server-chart-1
     # environment:
-    #   - VIS_REQUEST_SERVER=http://127.0.0.1:3000/render  # Notice: You can use AntV's project GPT-Vis-SSR to deploy an HTTP service in a private environment, and then pass the URL address through env VIS_REQUEST_SERVER.
+    #   # Optional: Set VIS_REQUEST_SERVER to use an external rendering service
+    #   # By default, charts are rendered locally on the server (private deployment)
+    #   - VIS_REQUEST_SERVER=http://127.0.0.1:3000/render  # Example: You can use AntV's project GPT-Vis-SSR to deploy an HTTP service in a private environment
     command: ["node", "build/index.js", "--transport", "sse", "--port", "1122", "--host", "0.0.0.0"]
     ports:
       - "1122:1122"

@@ -166,13 +166,27 @@ Options:
 
 | Variable             | Description                                                | Default                                      | Example                                       |
 | -------------------- | :--------------------------------------------------------- | -------------------------------------------- | --------------------------------------------- |
-| `VIS_REQUEST_SERVER` | Custom chart generation service URL for private deployment | `https://antv-studio.alipay.com/api/gpt-vis` | `https://your-server.com/api/chart`           |
+| `VIS_REQUEST_SERVER` | Custom chart generation service URL. If not set, charts are generated locally on the server (private deployment) | Local rendering (not set) | `https://antv-studio.alipay.com/api/gpt-vis` or `https://your-server.com/api/chart`           |
 | `SERVICE_ID`         | Service identifier for chart generation records            | -                                            | `your-service-id-123`                         |
 | `DISABLED_TOOLS`     | Comma-separated list of tool names to disable              | -                                            | `generate_fishbone_diagram,generate_mind_map` |
 
 ### 📠 Private Deployment
 
-`MCP Server Chart` provides a free chart generation service by default. For users with a need for private deployment, they can try using `VIS_REQUEST_SERVER` to customize their own chart generation service.
+**By default, `MCP Server Chart` uses private deployment with local chart rendering.** Charts are generated directly on the server using [@antv/gpt-vis-ssr](https://www.npmjs.com/package/@antv/gpt-vis-ssr), ensuring your data never leaves your environment.
+
+#### Using Default Local Rendering
+
+No configuration needed! Simply install and run the server:
+
+```bash
+npx -y @antv/mcp-server-chart
+```
+
+Charts will be generated as base64-encoded PNG images directly on your server.
+
+#### Using External Rendering Service (Optional)
+
+If you prefer to use an external rendering service, you can set the `VIS_REQUEST_SERVER` environment variable:
 
 ```json
 {
@@ -198,7 +212,7 @@ You can use AntV's project [GPT-Vis-SSR](https://github.com/antvis/GPT-Vis/tree/
   - **errorMessage**: `string` When `success = false`, return the error message.
 
 > [!NOTE]
-> The private deployment solution currently does not support geographic visualization chart generation include 3 tools: `geographic-district-map`, `geographic-path-map`, `geographic-pin-map`.
+> Geographic visualization chart generation (district-map, path-map, pin-map) requires an external service. These tools require `VIS_REQUEST_SERVER` to be configured and will not work with local rendering.
 
 ### 🗺️ Generate Records
 

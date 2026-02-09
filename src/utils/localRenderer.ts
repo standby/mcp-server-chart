@@ -1,3 +1,11 @@
+// Workaround for CSS imports in Node.js
+// @antv/s2 tries to import CSS files which Node.js can't handle
+// This must be set before importing @antv/gpt-vis-ssr
+if (typeof require !== "undefined" && require.extensions) {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  (require.extensions as any)[".css"] = () => {};
+}
+
 import { render } from "@antv/gpt-vis-ssr";
 
 /**
