@@ -1,16 +1,25 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { getDisabledTools, getVisRequestServer } from "../../src/utils/env";
+import {
+  getDisabledTools,
+  getVisRequestServer,
+  isPrivateDeployment,
+} from "../../src/utils/env";
 
 describe("env", () => {
-  it("default vis request server", () => {
-    expect(getVisRequestServer()).toBe(
-      "https://antv-studio.alipay.com/api/gpt-vis",
-    );
+  it("default vis request server is undefined (private deployment)", () => {
+    process.env.VIS_REQUEST_SERVER = undefined;
+    expect(getVisRequestServer()).toBeUndefined();
+  });
+
+  it("private deployment is enabled by default", () => {
+    process.env.VIS_REQUEST_SERVER = undefined;
+    expect(isPrivateDeployment()).toBe(true);
   });
 
   it("modify vis request server by env", () => {
     process.env.VIS_REQUEST_SERVER = "https://example.com/api/gpt-vis";
     expect(getVisRequestServer()).toBe("https://example.com/api/gpt-vis");
+    expect(isPrivateDeployment()).toBe(false);
   });
 
   it("default disabled tools", () => {
@@ -32,8 +41,7 @@ describe("env", () => {
   });
 
   afterEach(() => {
-    process.env.VIS_REQUEST_SERVER =
-      "https://antv-studio.alipay.com/api/gpt-vis";
+    process.env.VIS_REQUEST_SERVER = undefined;
     process.env.DISABLED_TOOLS = undefined;
   });
 });

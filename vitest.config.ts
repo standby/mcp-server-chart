@@ -8,6 +8,12 @@ export default defineConfig({
     testTimeout: 60_000,
     hookTimeout: 60_000,
     include: ["__tests__/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
+    setupFiles: ["__tests__/setup.ts"],
+    server: {
+      deps: {
+        inline: ["@antv/gpt-vis-ssr"],
+      },
+    },
     ...(enableCoverage
       ? {
           coverage: {

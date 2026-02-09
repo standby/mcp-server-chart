@@ -65,7 +65,7 @@ describe("MCP Server", () => {
     });
 
     // @ts-expect-error ignore
-    expect(res.content[0].text.substring(0, 8)).toBe("https://");
+    expect(res.content[0].text.substring(0, 5)).toBe("data:");
   });
 
   it("sse", async () => {
@@ -108,7 +108,7 @@ describe("MCP Server", () => {
     });
 
     // @ts-expect-error ignore
-    expect(res.content[0].text.substring(0, 8)).toBe("https://");
+    expect(res.content[0].text.substring(0, 5)).toBe("data:");
 
     await killAsync(child);
   });
@@ -155,7 +155,7 @@ describe("MCP Server", () => {
     });
 
     // @ts-expect-error ignore
-    expect(res.content[0].text.substring(0, 8)).toBe("https://");
+    expect(res.content[0].text.substring(0, 5)).toBe("data:");
 
     await killAsync(child);
   });

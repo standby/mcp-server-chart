@@ -2,12 +2,18 @@ import process from "node:process";
 
 /**
  * Get the VIS_REQUEST_SERVER from environment variables.
+ * Returns undefined if not set, indicating local rendering should be used.
  */
 export function getVisRequestServer() {
-  return (
-    process.env.VIS_REQUEST_SERVER ||
-    "https://antv-studio.alipay.com/api/gpt-vis"
-  );
+  return process.env.VIS_REQUEST_SERVER;
+}
+
+/**
+ * Check if private (local) deployment is enabled.
+ * Private deployment is enabled by default when VIS_REQUEST_SERVER is not set.
+ */
+export function isPrivateDeployment(): boolean {
+  return !process.env.VIS_REQUEST_SERVER;
 }
 
 /**
