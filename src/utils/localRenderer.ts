@@ -2,7 +2,7 @@
 // @antv/s2 tries to import CSS files which Node.js can't handle
 // This must be set before importing @antv/gpt-vis-ssr
 if (typeof require !== "undefined" && require.extensions) {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: require.extensions type definitions vary across Node.js versions
   (require.extensions as any)[".css"] = () => {};
 }
 
@@ -17,14 +17,14 @@ import { render } from "@antv/gpt-vis-ssr";
  */
 export async function renderChartLocally(
   type: string,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: options structure varies by chart type and cannot be strictly typed
   options: Record<string, any>,
 ): Promise<Buffer> {
   try {
     const vis = await render({
       type,
       ...options,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: render function expects flexible type that matches internal library interface
     } as any);
 
     // Get the rendered chart as PNG buffer
