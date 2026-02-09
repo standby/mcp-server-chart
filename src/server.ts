@@ -10,8 +10,32 @@ import {
   startStdioMcpServer,
 } from "./services";
 import { callTool } from "./utils/callTool";
-import { getDisabledTools } from "./utils/env";
+import {
+  getChartImageDir,
+  getDisabledTools,
+  getImageServerPort,
+  isLocalMode,
+} from "./utils/env";
+import { startImageServer } from "./utils/image-server";
+import { setOutputDir } from "./utils/local-render";
 import { logger } from "./utils/logger";
+
+/**
+ * Initialize local rendering if enabled.
+ * Starts the image server and waits for it to be ready.
+ */
+async function initLocalRendering(): Promise<void> {
+  if (!isLocalMode()) return;
+
+  const customDir = getChartImageDir();
+  if (customDir) {
+    setOutputDir(customDir);
+  }
+
+  const port = getImageServerPort();
+  await startImageServer("localhost", port);
+  logger.info(`Local rendering mode enabled (image server port: ${port})`);
+}
 
 /**
  * Creates and configures an MCP server for chart generation.
@@ -80,6 +104,7 @@ function setupToolHandlers(server: Server): void {
  * Runs the server with stdio transport.
  */
 export async function runStdioServer(): Promise<void> {
+  await initLocalRendering();
   const server = createServer();
   await startStdioMcpServer(server);
 }
@@ -92,6 +117,7 @@ export async function runSSEServer(
   port = 1122,
   endpoint = "/sse",
 ): Promise<void> {
+  await initLocalRendering();
   await startSSEMcpServer(createServer, endpoint, port, host);
 }
 
@@ -103,5 +129,6 @@ export async function runHTTPStreamableServer(
   port = 1122,
   endpoint = "/mcp",
 ): Promise<void> {
+  await initLocalRendering();
   await startHTTPStreamableServer(createServer, endpoint, port, host);
 }

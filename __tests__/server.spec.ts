@@ -5,14 +5,34 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { describe, expect, it } from "vitest";
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-function spawnAsync(command: string, args: string[]): Promise<any> {
+function spawnAsync(
+  command: string,
+  args: string[],
+  extraEnv: Record<string, string> = {},
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+): Promise<any> {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args);
-
-    child.stdout.on("data", (data) => {
-      resolve(child);
+    const child = spawn(command, args, {
+      env: { ...process.env, ...extraEnv },
     });
+
+    // Wait for the MCP transport server to be ready.
+    // With local rendering, the image server logs before the MCP server.
+    // We wait for transport-specific messages to ensure the MCP server is ready.
+    let resolved = false;
+    const tryResolve = (text: string) => {
+      if (resolved) return;
+      if (
+        text.includes("SSE Server listening") ||
+        text.includes("Streamable HTTP Server listening") ||
+        text.includes("Stdio MCP Server started")
+      ) {
+        resolved = true;
+        resolve(child);
+      }
+    };
+    child.stdout.on("data", (data) => tryResolve(data.toString()));
+    child.stderr.on("data", (data) => tryResolve(data.toString()));
   });
 }
 
@@ -31,6 +51,7 @@ describe("MCP Server", () => {
     const transport = new StdioClientTransport({
       command: "ts-node",
       args: ["./src/index.ts"],
+      env: { ...process.env, IMAGE_SERVER_PORT: "18905" },
     });
     const client = new Client({
       name: "stdio-client",
@@ -65,11 +86,15 @@ describe("MCP Server", () => {
     });
 
     // @ts-expect-error ignore
-    expect(res.content[0].text.substring(0, 8)).toBe("https://");
+    expect(res.content[0].text).toMatch(/^https?:\/\//);
+
+    await transport.close();
   });
 
   it("sse", async () => {
-    const child = await spawnAsync("ts-node", ["./src/index.ts", "-t", "sse"]);
+    const child = await spawnAsync("ts-node", ["./src/index.ts", "-t", "sse"], {
+      IMAGE_SERVER_PORT: "18901",
+    });
 
     const url = "http://localhost:1122/sse";
     const transport = new SSEClientTransport(new URL(url), {});
@@ -108,17 +133,17 @@ describe("MCP Server", () => {
     });
 
     // @ts-expect-error ignore
-    expect(res.content[0].text.substring(0, 8)).toBe("https://");
+    expect(res.content[0].text).toMatch(/^https?:\/\//);
 
     await killAsync(child);
   });
 
   it("streamable", async () => {
-    const child = await spawnAsync("ts-node", [
-      "./src/index.ts",
-      "-t",
-      "streamable",
-    ]);
+    const child = await spawnAsync(
+      "ts-node",
+      ["./src/index.ts", "-t", "streamable"],
+      { IMAGE_SERVER_PORT: "18902" },
+    );
 
     const url = "http://localhost:1122/mcp";
     const transport = new StreamableHTTPClientTransport(new URL(url));
@@ -155,13 +180,15 @@ describe("MCP Server", () => {
     });
 
     // @ts-expect-error ignore
-    expect(res.content[0].text.substring(0, 8)).toBe("https://");
+    expect(res.content[0].text).toMatch(/^https?:\/\//);
 
     await killAsync(child);
   });
 
   it("sse with multiple clients", async () => {
-    const child = await spawnAsync("ts-node", ["./src/index.ts", "-t", "sse"]);
+    const child = await spawnAsync("ts-node", ["./src/index.ts", "-t", "sse"], {
+      IMAGE_SERVER_PORT: "18903",
+    });
 
     const url = "http://localhost:1122/sse";
 
@@ -190,11 +217,11 @@ describe("MCP Server", () => {
   });
 
   it("streamable with multiple clients", async () => {
-    const child = await spawnAsync("ts-node", [
-      "./src/index.ts",
-      "-t",
-      "streamable",
-    ]);
+    const child = await spawnAsync(
+      "ts-node",
+      ["./src/index.ts", "-t", "streamable"],
+      { IMAGE_SERVER_PORT: "18904" },
+    );
 
     const url = "http://localhost:1122/mcp";
 

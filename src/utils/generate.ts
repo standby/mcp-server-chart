@@ -1,15 +1,59 @@
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import axios from "axios";
-import { getServiceIdentifier, getVisRequestServer } from "./env";
+import { getServiceIdentifier, getVisRequestServer, isLocalMode } from "./env";
+import { filePathToUrl } from "./image-server";
+import { renderG2SpecToFile } from "./local-render";
+import { logger } from "./logger";
+import { UNSUPPORTED_LOCAL_TYPES, translateToG2Spec } from "./spec-translator";
 
 /**
  * Generate a chart URL using the provided configuration.
- * @param type The type of chart to generate
- * @param options Chart options
- * @returns {Promise<string>} The generated chart URL.
- * @throws {Error} If the chart generation fails.
+ * In local mode, renders charts locally using @antv/g2-ssr.
+ * Falls back to the remote API for chart types that are not yet supported locally,
+ * or when RENDER_MODE=remote.
  */
 export async function generateChartUrl(
+  type: string,
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  options: Record<string, any>,
+): Promise<string> {
+  if (isLocalMode() && !UNSUPPORTED_LOCAL_TYPES.has(type)) {
+    return generateChartUrlLocally(type, options);
+  }
+  return generateChartUrlRemote(type, options);
+}
+
+/**
+ * Generate a chart URL by rendering locally with @antv/g2-ssr.
+ */
+async function generateChartUrlLocally(
+  type: string,
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  options: Record<string, any>,
+): Promise<string> {
+  const g2Spec = translateToG2Spec(type, options);
+  if (!g2Spec) {
+    logger.warn(
+      `Local rendering not available for chart type '${type}', falling back to remote.`,
+    );
+    return generateChartUrlRemote(type, options);
+  }
+
+  const width = options.width || 600;
+  const height = options.height || 400;
+
+  const filePath = await renderG2SpecToFile(
+    g2Spec as Record<string, unknown>,
+    width,
+    height,
+  );
+  return filePathToUrl(filePath);
+}
+
+/**
+ * Generate a chart URL using the remote API.
+ */
+async function generateChartUrlRemote(
   type: string,
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   options: Record<string, any>,
@@ -48,7 +92,8 @@ type ResponseResult = {
 };
 
 /**
- * Generate a map
+ * Generate a map.
+ * Maps always require the remote API (they depend on AMap service).
  * @param tool - The tool name
  * @param input - The input
  * @returns
