@@ -11,7 +11,7 @@
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@antv/mcp-server-chart",
+      "identifier": "@standby/mcp-server-chart",
       "version": "{{VERSION}}",
       "transport": {
         "type": "stdio"

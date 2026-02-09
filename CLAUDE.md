@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-MCP server (`@antv/mcp-server-chart`) that exposes 23 chart generation tools via the Model Context Protocol. Built with TypeScript, it accepts chart specifications, validates them with Zod, and renders charts locally using `@antv/g2-ssr` (no external server needed).
+MCP server (`@standby/mcp-server-chart`) that exposes 23 chart generation tools via the Model Context Protocol. Built with TypeScript, it accepts chart specifications, validates them with Zod, and renders charts locally using `@antv/g2-ssr` (no external server needed).
 
 ## Commands
 

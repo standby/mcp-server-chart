@@ -1,4 +1,4 @@
-# MCP Server Chart ![](https://badge.mcpx.dev?type=server "MCP Server") [![build](https://github.com/antvis/mcp-server-chart/actions/workflows/build.yml/badge.svg)](https://github.com/antvis/mcp-server-chart/actions/workflows/build.yml) [![npm Version](https://img.shields.io/npm/v/@antv/mcp-server-chart.svg)](https://www.npmjs.com/package/@antv/mcp-server-chart) [![smithery badge](https://smithery.ai/badge/@antvis/mcp-server-chart)](https://smithery.ai/server/@antvis/mcp-server-chart) [![npm License](https://img.shields.io/npm/l/@antv/mcp-server-chart.svg)](https://www.npmjs.com/package/@antv/mcp-server-chart) [![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/antvis/mcp-server-chart)](https://archestra.ai/mcp-catalog/antvis__mcp-server-chart) [![codecov](https://codecov.io/gh/antvis/mcp-server-chart/graph/badge.svg?token=7R98VGO5GL)](https://codecov.io/gh/antvis/mcp-server-chart) ![Visitors](https://hitscounter.dev/api/hit?url=https://github.com/antvis/mcp-server-chart&label=Visitors&icon=graph-up&color=%23dc3545&message=&style=flat&tz=UTC)
+# MCP Server Chart ![](https://badge.mcpx.dev?type=server "MCP Server") [![build](https://github.com/antvis/mcp-server-chart/actions/workflows/build.yml/badge.svg)](https://github.com/antvis/mcp-server-chart/actions/workflows/build.yml) [![npm Version](https://img.shields.io/npm/v/@standby/mcp-server-chart.svg)](https://www.npmjs.com/package/@standby/mcp-server-chart) [![smithery badge](https://smithery.ai/badge/@antvis/mcp-server-chart)](https://smithery.ai/server/@antvis/mcp-server-chart) [![npm License](https://img.shields.io/npm/l/@standby/mcp-server-chart.svg)](https://www.npmjs.com/package/@standby/mcp-server-chart) [![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/antvis/mcp-server-chart)](https://archestra.ai/mcp-catalog/antvis__mcp-server-chart) [![codecov](https://codecov.io/gh/antvis/mcp-server-chart/graph/badge.svg?token=7R98VGO5GL)](https://codecov.io/gh/antvis/mcp-server-chart) ![Visitors](https://hitscounter.dev/api/hit?url=https://github.com/antvis/mcp-server-chart&label=Visitors&icon=graph-up&color=%23dc3545&message=&style=flat&tz=UTC)
 
 A Model Context Protocol server for generating charts using [AntV](https://github.com/antvis/). We can use this mcp server for _chart generation_ and _data analysis_.
 
@@ -68,7 +68,7 @@ To use with `Desktop APP`, such as Claude, VSCode, [Cline](https://cline.bot/mcp
   "mcpServers": {
     "mcp-server-chart": {
       "command": "npx",
-      "args": ["-y", "@antv/mcp-server-chart"]
+      "args": ["-y", "@standby/mcp-server-chart"]
     }
   }
 }
@@ -81,7 +81,7 @@ On Window system:
   "mcpServers": {
     "mcp-server-chart": {
       "command": "cmd",
-      "args": ["/c", "npx", "-y", "@antv/mcp-server-chart"]
+      "args": ["/c", "npx", "-y", "@standby/mcp-server-chart"]
     }
   }
 }
@@ -108,7 +108,7 @@ Then provide your data or describe the visualization you want. The skill will in
 Install the package globally.
 
 ```bash
-npm install -g @antv/mcp-server-chart
+npm install -g @standby/mcp-server-chart
 ```
 
 Run the server with your preferred transport option:
@@ -179,7 +179,7 @@ Options:
   "mcpServers": {
     "mcp-server-chart": {
       "command": "npx",
-      "args": ["-y", "@antv/mcp-server-chart"],
+      "args": ["-y", "@standby/mcp-server-chart"],
       "env": {
         "VIS_REQUEST_SERVER": "<YOUR_VIS_REQUEST_SERVER>"
       }
@@ -215,7 +215,7 @@ Next, you need to add the `SERVICE_ID` environment variable to the MCP server co
   "mcpServers": {
     "AntV Map": {
       "command": "npx",
-      "args": ["-y", "@antv/mcp-server-chart"],
+      "args": ["-y", "@standby/mcp-server-chart"],
       "env": {
         "SERVICE_ID": "***********************************"
       }
@@ -237,7 +237,7 @@ You can disable specific chart generation tools using the `DISABLED_TOOLS` envir
   "mcpServers": {
     "mcp-server-chart": {
       "command": "npx",
-      "args": ["-y", "@antv/mcp-server-chart"],
+      "args": ["-y", "@standby/mcp-server-chart"],
       "env": {
         "DISABLED_TOOLS": "generate_fishbone_diagram,generate_mind_map"
       }

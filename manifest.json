@@ -17,7 +17,7 @@
     "entry_point": "build/index.js",
     "mcp_config": {
       "command": "npx",
-      "args": ["-y", "@antv/mcp-server-chart"]
+      "args": ["-y", "@standby/mcp-server-chart"]
     }
   },
   "tools": [
