@@ -1,35 +1,43 @@
-name: Publish to MCP Registry
+name: Release
 
 on:
-  push:
-    tags:
-      - '**' 
+  workflow_dispatch:
+    inputs:
+      version-type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
 
 jobs:
-  publish-to-mcp-registry:
+  release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write # Required for OIDC authentication
+      contents: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js environment
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Update server.json version
-        run: sed -i "s/{{VERSION}}/$GITHUB_REF_NAME/g" server.json
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # - name: Install MCP Publisher
-      #   run: |
-      #     curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+      - name: Bump version
+        run: npm version ${{ inputs.version-type }} -m "chore: bump version to %s"
 
-      # - name: Login to MCP Registry
-      #   run: ./mcp-publisher login github-oidc
-
-      # - name: Publish to MCP Registry
-      #   run: ./mcp-publisher publish
+      - name: Push changes
+        run: |
+          git push --follow-tags
