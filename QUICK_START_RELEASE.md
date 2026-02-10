@@ -45,6 +45,10 @@ git push origin v0.9.9
 If you want to bump the version before publishing:
 
 ```bash
+# Make sure you're on the main branch
+git checkout main
+git pull origin main
+
 # For a patch release (0.9.9 -> 0.9.10)
 npm version patch
 
@@ -56,7 +60,7 @@ npm version major
 
 # This creates a commit and a tag with 'v' prefix automatically
 # Then push both the commit and tags
-git push origin copilot/release-npm-package
+git push origin main
 git push origin --tags
 ```
 
